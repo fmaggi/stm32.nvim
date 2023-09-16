@@ -226,6 +226,7 @@ function Debugger.is_running()
 end
 
 function Debugger.terminate()
+    dap.terminate()
     kill_server()
 end
 
