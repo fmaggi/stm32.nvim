@@ -55,7 +55,7 @@ local M = {}
 ST_config = default_config
 
 function M.setup(config)
-    ST_config = vim.tbl_deep_extend("keep", config, default_config)
+    ST_config = vim.tbl_deep_extend("keep", config or {}, default_config)
     require('stm32.debug').setup(ST_config.stlink_gdb_server, ST_config.dap)
 end
 
