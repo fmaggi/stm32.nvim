@@ -201,7 +201,7 @@ function Debugger.debug(start_dap)
         on_exit = function(j, return_val)
             Server.instance = nil
             if return_val ~= 0 then
-                vim.shchedule(function()
+                vim.schedule(function()
                     vim.notify(string.format('ST-LINK_gdbserver error: %d, %s', return_val, vim.inspect(j:result())), vim.log.levels.ERROR)
                 end)
             end
