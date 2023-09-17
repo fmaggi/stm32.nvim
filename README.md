@@ -142,6 +142,6 @@ local default_config = {
 
 ## TODO
 
-[ ] Handle just flashing to the board
-[ ] Better logging
-[ ] Maybe include STM32CubeMX to generate config code
+- [ ] Handle just flashing to the board
+- [ ] Better logging
+- [ ] Maybe include STM32CubeMX to generate config code
