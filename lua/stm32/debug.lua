@@ -141,6 +141,7 @@ local function parse_args(opts)
 end
 
 local function config_dap(opts)
+    print('Configuring dap')
     local config = {
         name = opts.name,
         type = 'cppdbg',
@@ -168,6 +169,7 @@ function Debugger.setup(stlink_gdb_server_opts, dap_opts)
     Server.args = parse_args(stlink_gdb_server_opts)
 
     if dap_opts ~= nil then
+        print(dap_opts)
         dap_opts.port = stlink_gdb_server_opts.port
         config_dap(dap_opts)
     end
@@ -177,12 +179,10 @@ end
 --       as well but for some reason it never closed it quite right
 --       so I decided to start the server my self
 function Debugger.debug(start_dap)
-    if Server.args == nil or Server.path == nil then
-        local config = require('stm32').get_config()
-        Server.args = parse_args(config.stlink_gdb_server_opts)
-        Server.path = get_path(config.stlink_gdb_server_opts.server)
-    end
     if Debugger.is_running() then
+        if start_dap then
+            dap.continue()
+        end
         vim.notify('STM32: Server is already running', vim.log.levels.WARN)
         return
     end

@@ -1,6 +1,8 @@
 Exe = nil
 
-local function get_exe()
+local M = {}
+
+function M.get_exe()
     if Exe == nil then
         Exe = vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
     end
@@ -18,7 +20,7 @@ local default_config = {
         verbose = false,
         refresh_delay = nil,
         verify = true,
-        persistant = true,
+        persistant = false,
         swd = {
             port = 61235,
             cpu_clock = nil,
@@ -43,24 +45,27 @@ local default_config = {
         name = 'Debug STM32',
         gdb_path = 'arm-none-eabi-gdb',
         server_url = 'localhost', -- it uses the stlink_gdb_server port
-        program = get_exe,
-        stopAtEntry = true,
+        program = M.get_exe,
+        stopAtEntry = false,
         languages = { 'c', 'cpp', 'rust', 'zig' }
     },
     programmer = {}
 }
 
-local M = {}
 
 ST_config = default_config
 
 function M.setup(config)
+    print('setup')
     ST_config = vim.tbl_deep_extend("keep", config or {}, default_config)
+    print(vim.inspect(config), vim.inspect(ST_config))
     require('stm32.debug').setup(ST_config.stlink_gdb_server, ST_config.dap)
 end
 
 function M.get_config()
     return ST_config
 end
+
+M.setup({dap = nil})
 
 return M
