@@ -54,7 +54,7 @@ local function parse_args(opts)
         table.insert(args, '-e')
     end
 
-    if opts.swd ~= nil then
+    if opts.swd ~= false then
         table.insert(args, '-d')
         if opts.swd.port ~= nil then
             table.insert(args, '-z')
@@ -141,7 +141,6 @@ local function parse_args(opts)
 end
 
 local function config_dap(opts)
-    print('Configuring dap')
     local config = {
         name = opts.name,
         type = 'cppdbg',
@@ -168,8 +167,7 @@ function Debugger.setup(stlink_gdb_server_opts, dap_opts)
     Server.path = stlink_gdb_server_opts.server
     Server.args = parse_args(stlink_gdb_server_opts)
 
-    if dap_opts ~= nil then
-        print(dap_opts)
+    if dap_opts ~= false then
         dap_opts.port = stlink_gdb_server_opts.port
         config_dap(dap_opts)
     end

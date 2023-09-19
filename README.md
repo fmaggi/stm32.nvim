@@ -89,7 +89,7 @@ local default_config = {
         persistant = true,
 
         -- options: 
-        --     nil (use JTAG instead)
+        --     false (use JTAG instead)
         --     table: 
         --          port (port where server dumps info)
         --          cpu_clock
@@ -120,7 +120,7 @@ local default_config = {
         preserve_temps = false,
     },
     -- options:
-    --      nil (do not configure dap)
+    --      false (do not configure dap)
     --      table:
     --          name (dap name)
     --          gdb_path (path to gdb)

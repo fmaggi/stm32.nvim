@@ -56,9 +56,7 @@ local default_config = {
 ST_config = default_config
 
 function M.setup(config)
-    print('setup')
     ST_config = vim.tbl_deep_extend("keep", config or {}, default_config)
-    print(vim.inspect(config), vim.inspect(ST_config))
     require('stm32.debug').setup(ST_config.stlink_gdb_server, ST_config.dap)
 end
 
@@ -66,6 +64,6 @@ function M.get_config()
     return ST_config
 end
 
-M.setup({dap = nil})
+M.setup({dap = false})
 
 return M
