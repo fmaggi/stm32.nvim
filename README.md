@@ -53,8 +53,10 @@ or just the server
 :lua require("stm32.debugger").start_server(on_ready, on_success, config)
 ```
 
-`on_ready` callback when server is waiting for debugger connection(optional)
+`on_ready` callback when server is waiting for debugger connection (optional)
+
 `on_success` callback when server exits correctly (optional)
+
 `config` override current setup (optional)
 
 ### Flashing
@@ -64,6 +66,7 @@ or just the server
 ```
 
 `on_success` callback when programmer exits correctly (optional)
+
 `config` override current setup (optional)
 
 ## Configuration
