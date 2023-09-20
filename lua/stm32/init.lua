@@ -1,6 +1,8 @@
-Exe = nil
+local Path = require('plenary.path')
 
 local M = {}
+
+Exe = nil
 
 function M.get_exe()
     if Exe == nil then
@@ -49,21 +51,64 @@ local default_config = {
         stopAtEntry = false,
         languages = { 'c', 'cpp', 'rust', 'zig' }
     },
-    programmer = {}
+    stm32_programmer = {
+        programmer = vim.fn.expand('~') .. '/.local/stm32/STM32CubeProgrammer/bin/STM32_Programmer_CLI',
+        connect = {
+            port = 'SWD',
+            mode = 'UR',
+            reset = 'HWrst'
+        },
+        write = {
+            file = M.get_exe,
+            address = nil,
+            reset = true,
+            verify = true,
+        },
+    }
 }
-
 
 ST_config = default_config
 
 function M.setup(config)
     ST_config = vim.tbl_deep_extend("keep", config or {}, default_config)
-    require('stm32.debug').setup(ST_config.stlink_gdb_server, ST_config.dap)
+
+    local server_path = Path:new(ST_config.stlink_gdb_server.server):absolute()
+    ST_config.stlink_gdb_server.server = server_path
+
+    local prog_path = Path:new(ST_config.stm32_programmer.programmer):absolute()
+    ST_config.stm32_programmer.programmer = prog_path
+
+    if ST_config.stlink_gdb_server.cube_programmer_path == nil then
+        local path = Path:new(prog_path):parent()
+        if path ~= nil then
+            ST_config.stlink_gdb_server.cube_programmer_path = path.filename
+        else
+            path = Path:new(server_path):parent():joinpath('/STM32CubeProgrammer/bin/')
+            if path == nil then
+                vim.notify('STM32: path to STM32_Cube_Programmer_CLI not found. Server will not be able to run',
+                    vim.log.levels.ERROR)
+                return
+            end
+            ST_config.stlink_gdb_server.cube_programmer_path = path.filename
+        end
+    end
+
+    require('stm32.debugger').setup(ST_config.dap, ST_config.stlink_gdb_server.port)
+    require('stm32.programmer').setup(ST_config.stm32_programmer)
 end
 
-function M.get_config()
-    return ST_config
+function M.get_server_config()
+    return ST_config.stlink_gdb_server
 end
 
-M.setup({dap = false})
+function M.get_dap_config()
+    return ST_config.dap
+end
+
+function M.get_programmer_config()
+    return ST_config.stm32_programmer
+end
+
+M.setup({ dap = false })
 
 return M
