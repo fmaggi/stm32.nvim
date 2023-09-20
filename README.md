@@ -41,23 +41,34 @@ Once you have the dependencies installed
 ## Usage
 
 ### Debugging
-you can start the server and gdb together
+you can flash, start the server and start gdb all together
 ```lua
-:lua require("stm32.debug").debug(true)
+:lua require("stm32.debugger").debug(config)
 ```
 
-or just the server and start gdb yourself
+`config`  is optional to override current setup 
+
+or just the server
 ```lua
-:lua require("stm32.debug").debug(false)
+:lua require("stm32.debugger").start_server(on_ready, on_success, config)
 ```
+
+`on_ready` callback when server is waiting for debugger connection(optional)
+`on_success` callback when server exits correctly (optional)
+`config` override current setup (optional)
 
 ### Flashing
 
-TODO
+```lua
+:lua require('stm32.programmer').flash(on_success, config)
+```
+
+`on_success` callback when programmer exits correctly (optional)
+`config` override current setup (optional)
 
 ## Configuration
 
-if using lazy as your package manager you can pass your configs to ```opts``` otherwise you can call
+if using lazy as your package manager you can pass your configs to `opts` otherwise you can call
 ```lua
 require('stm32').setup({
     ...
@@ -134,14 +145,31 @@ local default_config = {
         gdb_path = 'arm-none-eabi-gdb',
         server_url = 'localhost', -- it uses the stlink_gdb_server port
         program = get_exe,
-        stopAtEntry = true,
+        stopAtEntry = false,
         languages = { 'c', 'cpp', 'rust', 'zig' }
     },
+    stm32_programmer = {
+        programmer = vim.fn.expand('~') .. '/.local/stm32/STM32CubeProgrammer/bin/STM32_Programmer_CLI',
+
+        -- for now only SWD is supported
+        connect = { 
+            port = 'SWD',
+            mode = 'UR',
+            reset = 'HWrst'
+        },
+        write = {
+            file = M.get_exe,
+            address = nil,
+            reset = true,
+            verify = true,
+        },
+    }
 }
 ```
 
 ## TODO
 
-- [ ] Handle just flashing to the board
+- [x] Handle just flashing to the board
+- [ ] Support more ports when flashing
 - [ ] Better logging
 - [ ] Maybe include STM32CubeMX to generate config code
