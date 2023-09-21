@@ -34,9 +34,9 @@ function Debugger.setup(dap_opts, port)
     end
 end
 
-function Debugger.start_server(config, on_ready, on_success)
+function Debugger.start_server(on_ready, on_success, config)
     local server_config = vim.tbl_deep_extend('keep', config or {}, require('stm32').get_server_config())
-    Server.start(server_config, on_ready, on_success)
+    Server.start(on_ready, on_success, server_config)
 end
 
 function Debugger.debug(config)
