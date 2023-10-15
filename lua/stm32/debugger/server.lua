@@ -144,12 +144,18 @@ function Server.start(on_ready, on_success, config)
         command = config.server,
         args = args,
         on_stdout = function(_, message, _)
-            if on_ready ~= nil and not Server.ready and message:find('^Waiting for debugger connection') then
+            if not Server.ready and message:find('^Waiting for debugger connection') then
                 Server.ready = true
-                vim.schedule(on_ready)
+                if on_ready ~= nil then
+                    vim.schedule(on_ready)
+                else
+                    vim.schedule(function()
+                        vim.notify('STM32: Server ready', vim.log.levels.INFO)
+                    end)
+                end
             end
         end,
-        on_exit = function(j, return_val)
+        on_exit = function(_, return_val)
             Server.ready = false
             Server.instance = nil
             if return_val == 0 then
@@ -158,7 +164,7 @@ function Server.start(on_ready, on_success, config)
                 end
             else
                 vim.schedule(function()
-                    vim.notify(string.format('ST-LINK_gdbserver error: %d, %s', return_val, vim.inspect(j:result())),
+                    vim.notify(string.format('STM32: ST-LINK_gdbserver exited with error code %d', return_val),
                         vim.log.levels.ERROR)
                 end)
             end

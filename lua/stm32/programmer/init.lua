@@ -77,25 +77,25 @@ local function parse_args(opts)
     return args
 end
 
--- NOTE: I should probably remove this?
-function M.setup(_)
-end
-
 function M.flash(on_success, config)
     local c = vim.tbl_deep_extend('keep', config or {}, require('stm32').get_programmer_config())
     local args = parse_args(c)
     Programmer.instance = Job:new({
         command = c.programmer,
         args = args,
-        on_exit = function(j, return_val)
+        on_exit = function(_, return_val)
             Programmer.instance = nil
             if return_val == 0 then
                 if on_success ~= nil then
                     vim.schedule(on_success)
+                else
+                    vim.schedule(function()
+                        vim.notify('STM32: flashing successful', vim.log.levels.INFO)
+                    end)
                 end
             else
                 vim.schedule(function()
-                    vim.notify(string.format('STM32_Cube_Programmer_CLI: %d, %s', return_val, vim.inspect(j:result())),
+                    vim.notify(string.format('STM32: STM32_Cube_Programmer_CLIexited with error %d', return_val),
                         vim.log.levels.ERROR)
                 end)
             end

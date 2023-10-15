@@ -6,9 +6,13 @@ Exe = nil
 
 function M.get_exe()
     if Exe == nil then
-        Exe = vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+        M.set_exe()
     end
     return Exe
+end
+
+function M.set_exe()
+    Exe = vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
 end
 
 local default_config = {
@@ -80,21 +84,19 @@ function M.setup(config)
 
     if ST_config.stlink_gdb_server.cube_programmer_path == nil then
         local path = Path:new(prog_path):parent()
-        if path ~= nil then
-            ST_config.stlink_gdb_server.cube_programmer_path = path.filename
-        else
-            path = Path:new(server_path):parent():joinpath('/STM32CubeProgrammer/bin/')
-            if path == nil then
+        if path == nil then
+            local s_path = Path:new(server_path):parent():joinpath('/STM32CubeProgrammer/bin/')
+            if s_path == nil then
                 vim.notify('STM32: path to STM32_Cube_Programmer_CLI not found. Server will not be able to run',
                     vim.log.levels.ERROR)
                 return
             end
-            ST_config.stlink_gdb_server.cube_programmer_path = path.filename
+            path = s_path
         end
+        ST_config.stlink_gdb_server.cube_programmer_path = path.filename
     end
 
     require('stm32.debugger').setup(ST_config.dap, ST_config.stlink_gdb_server.port)
-    require('stm32.programmer').setup(ST_config.stm32_programmer)
 end
 
 function M.get_server_config()
