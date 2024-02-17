@@ -1,3 +1,7 @@
+# DEPRECATED
+
+I have moved from this. I no longer use it. Instead I use GDB directly from the terminal
+I will no longer maintain it
 
 # STM32 neovim integration
 
